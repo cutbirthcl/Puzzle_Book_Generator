@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
-import json
+import sys
 import threading
 import time
 import uuid
@@ -20,10 +21,24 @@ from pydantic import BaseModel, Field
 from .reportlab_imposer import compile_booklet, generate_imposed_pdf_bytes
 from .solvers import parse_uploaded_puzzle_bytes
 
-DATA_DIR = Path(os.environ.get("DATA_DIR", "/app/data")).resolve()
+IS_FROZEN = bool(getattr(sys, "frozen", False))
+
+if os.environ.get("DATA_DIR"):
+    DATA_DIR = Path(os.environ["DATA_DIR"]).resolve()
+elif IS_FROZEN:
+    DATA_DIR = (Path(sys.executable).resolve().parent / "puzzle_data").resolve()
+else:
+    DATA_DIR = Path("/app/data").resolve()
+
 UPLOADS_DIR = (DATA_DIR / "uploads").resolve()
 USER_DATA_FILE = (DATA_DIR / "user_data.json").resolve()
-STATIC_DIR = Path(os.environ.get("STATIC_DIR", "/app/static")).resolve()
+
+if os.environ.get("STATIC_DIR"):
+    STATIC_DIR = Path(os.environ["STATIC_DIR"]).resolve()
+elif IS_FROZEN and hasattr(sys, "_MEIPASS"):
+    STATIC_DIR = (Path(getattr(sys, "_MEIPASS")) / "static").resolve()
+else:
+    STATIC_DIR = Path("/app/static").resolve()
 
 ALLOWED_EXTENSIONS = {".puz", ".svg", ".json", ".txt"}
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB per puzzle file
