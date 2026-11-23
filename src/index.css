@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-serif: "Syne", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.dot-grid-canvas {
+  background-color: #111113;
+  background-image: radial-gradient(#27272a 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.cutting-mat-dark {
+  background-color: #27272a;
+}
+
+.paper-dot-grid {
+  background-image: radial-gradient(circle, rgba(24, 24, 27, 0.25) 0.75px, transparent 0.75px);
+  background-size: 12px 12px;
+}
+
+.paper-graph-grid {
+  background-image:
+    linear-gradient(to right, rgba(24, 24, 27, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 24, 27, 0.09) 1px, transparent 1px);
+  background-size: 12px 12px;
+}

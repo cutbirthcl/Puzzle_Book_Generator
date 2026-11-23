@@ -1,0 +1,6 @@
+{
+  "name": "Pocket Puzzle Press",
+  "description": "Multi-game printable saddle-stitch booklet generator and PDF imposition studio for fold-and-staple pocket notebooks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
