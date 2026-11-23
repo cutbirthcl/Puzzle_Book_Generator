@@ -6,7 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
-data/
-puzzle_data/
+/data/
+/puzzle_data/
 __pycache__/
 *.pyc

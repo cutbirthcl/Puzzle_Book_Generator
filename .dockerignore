@@ -5,4 +5,5 @@ dist
 .env.*
 backend/__pycache__
 backend/*.pyc
-data
+/data
+/puzzle_data

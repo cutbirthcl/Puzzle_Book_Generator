@@ -1,0 +1,264 @@
+import { LineArtTheme, PublicDomainIllustrationData } from '../types/booklet';
+
+export interface PublicDomainPlateEntry extends PublicDomainIllustrationData {
+  id: string;
+  theme: Exclude<LineArtTheme, 'Uploaded SVG Plates'>;
+  filename: string;
+}
+
+/**
+ * Curated public-domain natural history, botanical, architectural, and celestial
+ * ink plates encoded as clean 100x100 vector SVG paths for crisp light-line tracing.
+ */
+export const PUBLIC_DOMAIN_PLATES: PublicDomainPlateEntry[] = [
+  // 1. BOTANICAL ENGRAVINGS
+  {
+    id: 'pd-curtis-iris',
+    filename: 'curtis_botanical_iris_1793.svg',
+    theme: 'Botanical Engravings',
+    title: 'Iris Germanica Study',
+    attribution: "Curtis's Botanical Magazine (Public Domain)",
+    year: '1793',
+    viewBoxSize: 100,
+    paths: [
+      // Main stem & bracts
+      'M 50 94 C 49 74, 51 56, 50 38',
+      'M 50 86 C 36 74, 28 56, 30 34 C 35 46, 43 66, 50 80',
+      'M 50 82 C 66 70, 72 54, 70 36 C 64 48, 56 64, 50 76',
+      // Center standard petals
+      'M 50 38 C 42 28, 41 16, 50 9 C 59 16, 58 28, 50 38 Z',
+      'M 50 36 C 38 30, 32 20, 39 14 C 45 14, 48 25, 50 36',
+      'M 50 36 C 62 30, 68 20, 61 14 C 55 14, 52 25, 50 36',
+      // Drooping fall petals + veins
+      'M 50 38 C 38 40, 26 48, 30 58 C 35 64, 46 54, 50 42',
+      'M 50 38 C 62 40, 74 48, 70 58 C 65 64, 54 54, 50 42',
+      'M 50 40 C 46 50, 44 60, 50 66 C 56 60, 54 50, 50 40',
+      // Delicate petal venation
+      'M 50 32 L 50 15',
+      'M 48 42 C 40 46, 35 50, 34 55',
+      'M 52 42 C 60 46, 65 50, 66 55',
+    ],
+  },
+  {
+    id: 'pd-fern-frond',
+    filename: 'hooker_polypodium_fern_1842.svg',
+    theme: 'Botanical Engravings',
+    title: 'Polypodium Fern Frond',
+    attribution: 'W.J. Hooker, Genera Filicum (Public Domain)',
+    year: '1842',
+    viewBoxSize: 100,
+    paths: [
+      // Curved rachis stem
+      'M 48 94 C 48 68, 47 42, 53 10',
+      // Paired pinnae leaflets ascending
+      'M 48 80 C 36 78, 22 73, 16 68 C 24 65, 38 69, 48 75',
+      'M 48 78 C 62 76, 76 71, 82 66 C 74 63, 60 67, 48 73',
+      'M 48 67 C 35 64, 22 59, 18 54 C 26 51, 39 56, 48 62',
+      'M 48 65 C 62 62, 75 57, 79 52 C 71 49, 58 54, 48 60',
+      'M 49 54 C 37 51, 26 46, 23 41 C 30 39, 41 44, 49 49',
+      'M 49 52 C 61 49, 72 44, 75 39 C 68 37, 57 42, 49 47',
+      'M 50 41 C 40 38, 32 34, 29 30 C 35 28, 44 32, 50 37',
+      'M 50 39 C 60 36, 68 32, 71 28 C 65 26, 56 30, 50 35',
+      'M 51 29 C 43 26, 38 23, 36 20 C 41 19, 47 22, 51 25',
+      'M 51 27 C 59 24, 64 21, 66 18 C 61 17, 55 20, 51 23',
+      // Midribs
+      'M 48 76 L 22 69',
+      'M 48 74 L 76 67',
+      'M 48 63 L 24 55',
+      'M 48 61 L 73 53',
+      'M 49 50 L 29 42',
+      'M 49 48 L 69 40',
+    ],
+  },
+  {
+    id: 'pd-poppy-capsule',
+    filename: 'thome_papaver_botanical_1885.svg',
+    theme: 'Botanical Engravings',
+    title: 'Papaver Blossom & Pod',
+    attribution: 'O.W. Thomé, Flora von Deutschland (Public Domain)',
+    year: '1885',
+    viewBoxSize: 100,
+    paths: [
+      'M 50 94 C 50 76, 48 60, 50 46',
+      'M 50 84 C 42 74, 34 62, 30 50',
+      // Cupped petals
+      'M 50 48 C 32 48, 19 36, 22 22 C 29 14, 42 18, 50 28',
+      'M 50 48 C 68 48, 81 36, 78 22 C 71 14, 58 18, 50 28',
+      'M 34 22 C 42 11, 58 11, 66 22',
+      // Seed capsule & stamen crown
+      'M 45 36 C 45 29, 55 29, 55 36 C 55 43, 45 43, 45 36 Z',
+      'M 43 30 L 57 30',
+      'M 39 39 L 44 35 M 37 33 L 43 33 M 61 39 L 56 35 M 63 33 L 57 33',
+      // Companion bud
+      'M 30 50 C 26 42, 27 34, 31 32 C 35 34, 36 42, 30 50 Z',
+    ],
+  },
+
+  // 2. NATURAL HISTORY & SHELLS
+  {
+    id: 'pd-haeckel-ammonite',
+    filename: 'haeckel_ammonitida_1904.svg',
+    theme: 'Natural History & Shells',
+    title: 'Ammonitida Spiral Shell',
+    attribution: 'Ernst Haeckel, Kunstformen der Natur (Public Domain)',
+    year: '1904',
+    viewBoxSize: 100,
+    paths: [
+      // Logarithmic outer shell spiral
+      'M 52 50 C 52 46, 56 46, 56 50 C 56 56, 46 56, 46 49 C 46 40, 62 39, 63 50 C 64 64, 40 66, 38 50 C 36 30, 68 27, 72 49 C 76 74, 32 78, 28 50 C 23 20, 74 14, 83 48 C 88 70, 74 88, 52 88 C 28 88, 14 68, 16 44 C 19 20, 38 11, 58 13',
+      // Aperture lip
+      'M 58 13 C 68 15, 78 22, 83 34 C 85 40, 84 44, 83 48',
+      // Radial suture ribs
+      'M 50 28 C 48 22, 47 16, 48 12',
+      'M 40 31 C 35 25, 31 20, 29 17',
+      'M 32 40 C 25 36, 20 33, 17 31',
+      'M 29 52 C 22 52, 18 52, 15 52',
+      'M 33 64 C 27 68, 23 71, 21 73',
+      'M 43 72 C 40 79, 39 83, 38 86',
+      'M 56 73 C 58 80, 60 84, 62 87',
+      'M 68 66 C 74 71, 78 74, 81 76',
+      'M 73 53 C 79 54, 83 55, 86 55',
+    ],
+  },
+  {
+    id: 'pd-merian-butterfly',
+    filename: 'merian_papilio_entomology_1705.svg',
+    theme: 'Natural History & Shells',
+    title: 'Swallowtail Specimen',
+    attribution: 'Maria Sibylla Merian, Metamorphosis (Public Domain)',
+    year: '1705',
+    viewBoxSize: 100,
+    paths: [
+      // Thorax & abdomen
+      'M 50 32 C 47 38, 47 46, 50 52 C 53 46, 53 38, 50 32 Z',
+      'M 50 52 C 48 60, 48 70, 50 76 C 52 70, 52 60, 50 52 Z',
+      // Antennae
+      'M 49 32 C 46 23, 41 17, 36 15',
+      'M 51 32 C 54 23, 59 17, 64 15',
+      // Forewings
+      'M 48 37 C 32 22, 14 20, 12 31 C 10 42, 28 50, 48 48',
+      'M 52 37 C 68 22, 86 20, 88 31 C 90 42, 72 50, 52 48',
+      // Hindwings with swallowtail extensions
+      'M 48 49 C 30 52, 18 62, 22 72 C 26 78, 32 76, 33 86 C 36 77, 43 72, 48 61',
+      'M 52 49 C 70 52, 82 62, 78 72 C 74 78, 68 76, 67 86 C 64 77, 57 72, 52 61',
+      // Wing venation & spots
+      'M 46 39 L 17 28 M 46 42 L 15 36 M 46 45 L 22 44',
+      'M 54 39 L 83 28 M 54 42 L 85 36 M 54 45 L 78 44',
+      'M 46 53 L 26 65 M 46 56 L 31 74',
+      'M 54 53 L 74 65 M 54 56 L 69 74',
+    ],
+  },
+  {
+    id: 'pd-haeckel-radiolaria',
+    filename: 'haeckel_radiolaria_star_1904.svg',
+    theme: 'Natural History & Shells',
+    title: 'Radiolaria Micro-Skeleton',
+    attribution: 'Ernst Haeckel, Kunstformen der Natur (Public Domain)',
+    year: '1904',
+    viewBoxSize: 100,
+    paths: [
+      'M 50 10 L 54 36 L 80 20 L 64 46 L 90 50 L 64 54 L 80 80 L 54 64 L 50 90 L 46 64 L 20 80 L 36 54 L 10 50 L 36 46 L 20 20 L 46 36 Z',
+      'M 50 28 A 22 22 0 1 0 50 72 A 22 22 0 1 0 50 28 Z',
+      'M 50 38 A 12 12 0 1 0 50 62 A 12 12 0 1 0 50 38 Z',
+      'M 50 45 A 5 5 0 1 0 50 55 A 5 5 0 1 0 50 45 Z',
+    ],
+  },
+
+  // 3. ARCHITECTURAL PLATES
+  {
+    id: 'pd-palladio-rotunda',
+    filename: 'palladio_arch_elevation_1570.svg',
+    theme: 'Architectural Plates',
+    title: 'Palladian Portico Elevation',
+    attribution: 'Andrea Palladio, Quattro Libri (Public Domain)',
+    year: '1570',
+    viewBoxSize: 100,
+    paths: [
+      // Stepped plinth
+      'M 12 86 L 88 86 M 15 82 L 85 82 M 18 78 L 82 78',
+      // Four Corinthian columns
+      'M 22 78 L 22 40 M 26 78 L 26 40',
+      'M 36 78 L 36 40 M 40 78 L 40 40',
+      'M 60 78 L 60 40 M 64 78 L 64 40',
+      'M 74 78 L 74 40 M 78 78 L 78 40',
+      // Entablature & triangular pediment
+      'M 18 40 L 82 40 M 16 35 L 84 35',
+      'M 14 35 L 50 18 L 86 35 Z',
+      'M 21 33 L 50 21 L 79 33',
+      // Central archway & dome behind pediment
+      'M 43 78 L 43 56 A 7 7 0 0 1 57 56 L 57 78',
+      'M 28 28 C 32 14, 68 14, 72 28',
+      'M 47 14 L 47 10 L 53 10 L 53 14',
+    ],
+  },
+  {
+    id: 'pd-gothic-rose-window',
+    filename: 'viollet_le_duc_rose_window_1854.svg',
+    theme: 'Architectural Plates',
+    title: 'Cathedral Rose Tracery',
+    attribution: 'Viollet-le-Duc, Dictionnaire (Public Domain)',
+    year: '1854',
+    viewBoxSize: 100,
+    paths: [
+      'M 50 10 A 40 40 0 1 0 50 90 A 40 40 0 1 0 50 10 Z',
+      'M 50 16 A 34 34 0 1 0 50 84 A 34 34 0 1 0 50 16 Z',
+      'M 50 40 A 10 10 0 1 0 50 60 A 10 10 0 1 0 50 40 Z',
+      // 8 radial mullions & trefoil lobes
+      'M 50 16 L 50 40 M 50 60 L 50 84 M 16 50 L 40 50 M 60 50 L 84 50',
+      'M 26 26 L 43 43 M 57 57 L 74 74 M 74 26 L 57 43 M 43 57 L 26 74',
+      // Outer cusped petals
+      'M 43 17 A 7 7 0 0 1 57 17',
+      'M 83 43 A 7 7 0 0 1 83 57',
+      'M 57 83 A 7 7 0 0 1 43 83',
+      'M 17 57 A 7 7 0 0 1 17 43',
+      'M 22 30 A 7 7 0 0 1 30 22',
+      'M 70 22 A 7 7 0 0 1 78 30',
+      'M 78 70 A 7 7 0 0 1 70 78',
+      'M 30 78 A 7 7 0 0 1 22 70',
+    ],
+  },
+
+  // 4. CELESTIAL & GEOMETRIC
+  {
+    id: 'pd-cellarius-compass',
+    filename: 'cellarius_compass_rose_1660.svg',
+    theme: 'Celestial & Geometric',
+    title: 'Harmonia Macrocosmica Compass',
+    attribution: 'Andreas Cellarius, Atlas Coelestis (Public Domain)',
+    year: '1660',
+    viewBoxSize: 100,
+    paths: [
+      'M 50 10 A 40 40 0 1 0 50 90 A 40 40 0 1 0 50 10 Z',
+      'M 50 18 A 32 32 0 1 0 50 82 A 32 32 0 1 0 50 18 Z',
+      // Cardinal 4-point star
+      'M 50 8 L 56 44 L 92 50 L 56 56 L 50 92 L 44 56 L 8 50 L 44 44 Z',
+      // Intercardinal points
+      'M 50 50 L 72 28 M 50 50 L 72 72 M 50 50 L 28 72 M 50 50 L 28 28',
+      'M 28 28 L 44 44 M 72 28 L 56 44 M 72 72 L 56 56 M 28 72 L 44 56',
+      'M 50 42 A 8 8 0 1 0 50 58 A 8 8 0 1 0 50 42 Z',
+    ],
+  },
+  {
+    id: 'pd-armillary-sphere',
+    filename: 'flammarion_armillary_sphere_1888.svg',
+    theme: 'Celestial & Geometric',
+    title: 'Armillary Celestial Sphere',
+    attribution: 'Camille Flammarion Archive (Public Domain)',
+    year: '1888',
+    viewBoxSize: 100,
+    paths: [
+      // Outer meridian ring & ecliptic band
+      'M 50 12 A 34 34 0 1 0 50 80 A 34 34 0 1 0 50 12 Z',
+      'M 50 16 A 30 30 0 1 0 50 76 A 30 30 0 1 0 50 16 Z',
+      // Tilted equatorial & ecliptic ellipses
+      'M 20 46 A 30 11 0 1 0 80 46 A 30 11 0 1 0 20 46 Z',
+      'M 26 28 C 40 38, 60 54, 74 64',
+      'M 24 31 C 38 41, 58 57, 72 67',
+      // Polar axis & central Earth globe
+      'M 50 8 L 50 86',
+      'M 50 38 A 8 8 0 1 0 50 54 A 8 8 0 1 0 50 38 Z',
+      // Pedestal stand
+      'M 34 88 L 66 88 M 38 84 L 62 84 M 44 80 L 42 84 M 56 80 L 58 84',
+    ],
+  },
+];
