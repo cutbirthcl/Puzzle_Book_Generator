@@ -1,0 +1,23 @@
+services:
+  puzzle-book-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: puzzle-book-generator
+    ports:
+      - "8080:8080"
+    volumes:
+      - puzzle_data:/app/data
+    environment:
+      - DATA_DIR=/app/data
+      - STATIC_DIR=/app/static
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  puzzle_data:

@@ -18,6 +18,14 @@ import {
   UploadLogEntry,
   VaultItem,
 } from './types/booklet';
+import {
+  checkBackendHealth,
+  deleteBackendVaultItem,
+  fetchBackendVault,
+  generateBookletPdfFromBackend,
+  resetBackendVault,
+  uploadFileToBackend,
+} from './services/api';
 import { shortHash } from './utils/hash';
 import { buildExportManifest, compileBooklet } from './utils/imposition';
 import { generateImposedPdfBytes } from './utils/pdfGenerator';
@@ -50,6 +58,7 @@ export default function App() {
     }
   });
 
+  const [backendOnline, setBackendOnline] = useState(false);
   const [isVaultOpen, setIsVaultOpen] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [statusNotice, setStatusNotice] = useState<string | null>(null);
@@ -61,20 +70,41 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    void checkBackendHealth().then(async (online) => {
+      if (!active || !online) return;
+      setBackendOnline(true);
+      try {
+        const remote = await fetchBackendVault();
+        if (!active) return;
+        setUploadedVault(remote.items);
+        setUploadLogs(remote.logs);
+      } catch {
+        // Keep current vault state if remote sync fails
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (backendOnline) return;
     try {
       localStorage.setItem(STORAGE_UPLOADS_KEY, JSON.stringify(uploadedVault));
     } catch {
       // Ignore storage quota errors
     }
-  }, [uploadedVault]);
+  }, [uploadedVault, backendOnline]);
 
   useEffect(() => {
+    if (backendOnline) return;
     try {
       localStorage.setItem(STORAGE_LOGS_KEY, JSON.stringify(uploadLogs));
     } catch {
       // Ignore storage quota errors
     }
-  }, [uploadLogs]);
+  }, [uploadLogs, backendOnline]);
 
   const vaultItems = useMemo(
     () => [...uploadedVault, ...seededVault],
@@ -154,7 +184,7 @@ export default function App() {
     setQueue((prev) => (prev.length <= 1 ? prev : prev.filter((b) => b.id !== id)));
   };
 
-  // Vault upload with SHA-256 duplicate rejection
+  // Vault upload with SHA-256 duplicate rejection (backend or local fallback)
   const handleUploadFiles = async (files: FileList | File[]) => {
     const fileArray = Array.from(files);
     const currentByHash = new Map<string, VaultItem>();
@@ -165,48 +195,71 @@ export default function App() {
     const newlyAccepted: VaultItem[] = [];
     const newLogs: UploadLogEntry[] = [];
 
-    for (const file of fileArray) {
-      try {
-        const { item, sha256 } = await parseUploadedPuzzleFile(file);
-        const existing = currentByHash.get(sha256);
-        if (existing) {
+    if (backendOnline) {
+      for (const file of fileArray) {
+        try {
+          const result = await uploadFileToBackend(file);
+          newLogs.push(result.log);
+          if (result.status === 'accepted' && result.item) {
+            newlyAccepted.push(result.item);
+          }
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Unable to upload file';
           newLogs.push({
             id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
             filename: file.name,
             status: 'rejected',
-            sha256,
-            duplicateOf: existing.filename,
-            reason: `Matches existing content hash`,
-            timestamp: new Date().toISOString(),
-          });
-        } else {
-          const fullItem: VaultItem = {
-            ...item,
-            id: `upl_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
-            addedAt: new Date().toISOString(),
-          };
-          currentByHash.set(sha256, fullItem);
-          newlyAccepted.push(fullItem);
-          newLogs.push({
-            id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-            filename: file.name,
-            status: 'accepted',
-            sha256,
-            reason: item.summary,
+            sha256: '0000000000000000',
+            duplicateOf: `upload error (${message})`,
+            reason: message,
             timestamp: new Date().toISOString(),
           });
         }
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unable to parse file';
-        newLogs.push({
-          id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-          filename: file.name,
-          status: 'rejected',
-          sha256: '0000000000000000',
-          duplicateOf: `parse error (${message})`,
-          reason: message,
-          timestamp: new Date().toISOString(),
-        });
+      }
+    } else {
+      for (const file of fileArray) {
+        try {
+          const { item, sha256 } = await parseUploadedPuzzleFile(file);
+          const existing = currentByHash.get(sha256);
+          if (existing) {
+            newLogs.push({
+              id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+              filename: file.name,
+              status: 'rejected',
+              sha256,
+              duplicateOf: existing.filename,
+              reason: `Matches existing content hash`,
+              timestamp: new Date().toISOString(),
+            });
+          } else {
+            const fullItem: VaultItem = {
+              ...item,
+              id: `upl_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
+              addedAt: new Date().toISOString(),
+            };
+            currentByHash.set(sha256, fullItem);
+            newlyAccepted.push(fullItem);
+            newLogs.push({
+              id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+              filename: file.name,
+              status: 'accepted',
+              sha256,
+              reason: item.summary,
+              timestamp: new Date().toISOString(),
+            });
+          }
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Unable to parse file';
+          newLogs.push({
+            id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            filename: file.name,
+            status: 'rejected',
+            sha256: '0000000000000000',
+            duplicateOf: `parse error (${message})`,
+            reason: message,
+            timestamp: new Date().toISOString(),
+          });
+        }
       }
     }
 
@@ -218,13 +271,16 @@ export default function App() {
       const acceptedCount = newLogs.filter((l) => l.status === 'accepted').length;
       const rejectedCount = newLogs.length - acceptedCount;
       showNotice(
-        `Vault ingestion: ${acceptedCount} accepted, ${rejectedCount} rejected.`
+        `Upload complete: ${acceptedCount} accepted, ${rejectedCount} rejected.`
       );
     }
   };
 
   const handleDeleteUploadedItem = (id: string) => {
     setUploadedVault((prev) => prev.filter((item) => item.id !== id));
+    if (backendOnline) {
+      void deleteBackendVaultItem(id);
+    }
   };
 
   const handleResetVault = () => {
@@ -232,29 +288,51 @@ export default function App() {
     setUploadLogs([]);
     localStorage.removeItem(STORAGE_UPLOADS_KEY);
     localStorage.removeItem(STORAGE_LOGS_KEY);
+    if (backendOnline) {
+      void resetBackendVault();
+    }
     showNotice('Uploaded files cleared; built-in drawings & puzzle packs restored.');
   };
 
-  // Exports
+  // Exports (Backend ReportLab when online, seamless client pdf-lib fallback when offline)
   const handleDownloadPdf = async () => {
     setIsExportingPdf(true);
     try {
-      const bytes = await generateImposedPdfBytes(specs, compilation);
-      const buffer = new Uint8Array(bytes.byteLength);
-      buffer.set(bytes);
-      const blob = new Blob([buffer.buffer], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
       const slug = (specs.coverTitle || 'pocket-puzzle-booklet')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
+      const filename = `${slug || 'pocket-puzzle-booklet'}-${compilation.stats.paddedTotalPages}pp.pdf`;
+
+      let blob: Blob | null = null;
+      if (backendOnline) {
+        try {
+          blob = await generateBookletPdfFromBackend({
+            specs,
+            blocks: queue,
+            generationSeed,
+            vaultItems,
+          });
+        } catch {
+          blob = null;
+        }
+      }
+
+      if (!blob) {
+        const bytes = await generateImposedPdfBytes(specs, compilation);
+        const buffer = new Uint8Array(bytes.byteLength);
+        buffer.set(bytes);
+        blob = new Blob([buffer.buffer], { type: 'application/pdf' });
+      }
+
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${slug || 'pocket-puzzle-booklet'}-${compilation.stats.paddedTotalPages}pp.pdf`;
+      a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
       showNotice(
-        `Exported ${compilation.stats.duplexSheets}-sheet imposed PDF (${compilation.stats.paddedTotalPages} pages).`
+        `Exported ${compilation.stats.duplexSheets}-sheet printable PDF (${compilation.stats.paddedTotalPages} pages).`
       );
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'PDF generation failed';
